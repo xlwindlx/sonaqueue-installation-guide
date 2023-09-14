@@ -7,5 +7,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword   # 초�
 ```
 http://211.183.3.199:8080 으로 접속하여 앞서 확인한 초기 패스워드 입력 뒤, 계정 정보를 입력
 
+![screenshot20](join_in_jenkins.png)
+
 ## 2. 젠킨스 설정
 
