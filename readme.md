@@ -453,11 +453,39 @@ sonar-scanner -D sonar.login=your_token_here
 root@devops:~# java -version
 openjdk version "11.0.20.1" 2023-08-24
 
-* 위와 같은 결과나 나오지 않는다면 야래의 명령을 실행하여 자바를 설치해 둔다.
+* 위와 같은 결과나 나오지 않는다면 아래의 명령을 실행하여 자바를 설치해 둔다.
 
 ```bash
 apt update
 apt install openjdk-11-jdk -y 
 ```
 
-## 2. 
+* 실행파일의 경로를 PATH 변수에 추가해 둔다
+  ```bash
+  PATH=$PATH:/usr/lib/jvm/java-11-openjdk-amd64/bin/
+  ```
+
+## 2. 젠킨스 repo. 추가와 젠킨스 설치
+```bash
+wget -p -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+apt update
+apt install jenkins -y
+```
+
+* 만약 퍼블릭키가 필요하다는 내용과 함께 오류가 발생하면 해당 키를 다음과 같은 방법으로 입력한 뒤 업데이트, 설치를 진행한다.
+```bash
+apt-key adv --keyserver  keyserver.ubuntu.com --recv-keys "오류에표기된 PUB키"
+```
+## 3. 젠킨스 시작하기
+```bash
+systemctl enable jenkins
+systemctl start jenkins
+systemctl status jenkins
+```
+
+### 4. 젠킨스 접속 
+* 아래의 명령을 이용하여 초기 접속 패스워드를 확인한 뒤, http://IP주소:8080 으로 접속한다.
+```bash
+ cat /var/lib/jenkins/secrets/initialAdminP
+```
