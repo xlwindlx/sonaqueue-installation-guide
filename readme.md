@@ -445,3 +445,19 @@ sonar-scanner -D sonar.login=your_token_here
 
 * The project’s code quality report will now be on the SonarQube dashboard.
 
+
+
+# 젠킨스 설치
+
+## 1. java 설치
+root@devops:~# java -version
+openjdk version "11.0.20.1" 2023-08-24
+
+* 위와 같은 결과나 나오지 않는다면 야래의 명령을 실행하여 자바를 설치해 둔다.
+
+```bash
+apt update
+apt install openjdk-11-jdk -y 
+```
+
+## 2. 
