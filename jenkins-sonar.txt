@@ -1,0 +1,87 @@
+[참고]
+https://waspro.tistory.com/596 
+https://github.com/beomtaek/sonaqueue-installation-guide
+
+[sonarqube, jenkins 설치된 상태에서 scan]
+0. 프로젝트 생성 : test
+1. 토큰 생성
+test: 25b7de9a8fe2daeb42437b62aceb7a9ea2f79f72
+2. scanner
+sonar-scanner \
+  -Dsonar.projectKey=test \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=http://211.183.3.199:9000 \
+  -Dsonar.login=25b7de9a8fe2daeb42437b62aceb7a9ea2f79f72
+
+
+sonar-scanner -Dsonar.projectKey=test -Dsonar.sources=. -Dsonar.host.url=http://211.183.3.199:9000 -Dsonar.login=25b7de9a8fe2daeb42437b62aceb7a9ea2f79f72
+
+3. 젠킨스 웹 훅 등록 > jenkins 에서 요청한 정적 분석이 완료된 이후 분석 결과를 Jenkins 에 Webhook 으로 알려줌으로써 Jenkins QualifyGate 응답을 받도록 구성하기 위하여..
+
+Administration > Configuration > Webhooks > 
+
+웹훅 이름 : test-webhook
+URL : http://211.183.3.199:8080/sonarqube-webhook/
+
+만약 로컬주소 사용못한다는 내용 나오면 
+administration > Security 에서 Enable local webhooks valication 을 비활성화 해 둔다.
+
+4. sonarqube 플러그인 설치
+- SonarQube Scanner
+- Sonar Quality Gates
+
+5. SonarQube Server 등록하기
+Dashboard > Jenkins 관리 > System 에서 SonarQube servers 에서 소나큐브 서버 정보를 등록한다.
+
+sonarQube-Server
+http://211.183.3.199:9000
+
+domain : Global credentials
+kind : secret text
+scope : jenkins, nodes, items, ..
+secret : 25b7de9a8fe2daeb42437b62aceb7a9ea2f79f72
+id/desc..: sonar-token
+
+ SecretKey에 앞서 SonarQube Project에서 생성한 Token을 등록하고 이를 적용한 SonarQube Server 시스템 정보를 설정한다.
+
+
+6. Global Tools Configuration(SonarQube scanner 등록)
+Jenkins 관리 > Tools > SonarQube Scanner installations 에서
+Name: SonarQube-Scanner-Server
+version: SonarQube Scanner 5.0.1.3006
+
+7. item 등록 + pipeline
+Pipeline script
+
+   pipeline {
+       agent any
+       stages{
+           stage('SCM') {
+               steps {
+                   git branch: "master",
+                   url: "https://github.com/SonarSource/sonar-scanning-examples.git"
+               }
+           }
+           
+        stage('SonarQube analysis') {
+            steps{
+                withSonarQubeEnv('sonarQube-Server'){
+                    sh "cd ./sonarqube-scanner"
+                    sh "sonar-scanner -Dsonar.projectKey=test -Dsonar.sources=. -Dsonar.host.url=http://211.183.3.199:9000 -Dsonar.login=25b7de9a8fe2daeb42437b62aceb7a9ea2f79f72 -Dsonar.exclusions=**/*.java"
+                }
+            }
+        }
+       }
+   }
+
+
+# exclusion > 특정 소스코드 파일은 제외
+*	0 혹은 그 이상의 문자
+**	0 혹은 그 이상의 디렉토리
+?	1 문자
+
+사용 예)
+sonar.exclusions=bank/**/*.cbl
+sonar.exclusions=bank/**/*
+sonar.exclusions=src/main/java/org/sonar/*
+sonar.exclusions=**/*Bean.java,**/*DTO.java
