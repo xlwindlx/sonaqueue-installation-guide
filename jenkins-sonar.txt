@@ -71,6 +71,20 @@ Pipeline script
                 }
             }
         }
+        stage('결과 출력') {
+            steps{
+                sh '''
+                    if [ $? -eq 0 ]
+                    then
+                        echo "작업이 정상적으로 마무리 되었음"
+                    else
+                        echo "오류 발생"
+                    fi
+                
+                '''
+            }
+        }
+        
        }
    }
 
