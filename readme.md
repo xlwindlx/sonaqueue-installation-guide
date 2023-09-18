@@ -487,5 +487,5 @@ systemctl status jenkins
 ### 4. 젠킨스 접속 
 * 아래의 명령을 이용하여 초기 접속 패스워드를 확인한 뒤, http://IP주소:8080 으로 접속한다.
 ```bash
- cat /var/lib/jenkins/secrets/initialAdminP
+ cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
